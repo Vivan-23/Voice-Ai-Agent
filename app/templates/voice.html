@@ -454,7 +454,11 @@
               console.warn('Binding error:', bindErr);
             }
           },
-          onDisconnect: () => {
+          onDisconnect: (details) => {
+            const reason = details && (details.reason || details.message) ? (details.reason || details.message) : '';
+            if (reason) {
+              logTelemetry(`Session disconnected: ${reason}`);
+            }
             handleDisconnected();
           },
           onModeChange: ({ mode }) => {

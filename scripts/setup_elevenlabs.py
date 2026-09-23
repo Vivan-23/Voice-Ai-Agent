@@ -128,10 +128,12 @@ def main():
     # 3. Create Speech Engine Resource
     print("\nCreating ElevenLabs Speech Engine resource...")
     try:
+        from elevenlabs.types.speech_engine_conversation_initiation_client_data_config import SpeechEngineConversationInitiationClientDataConfig
         config = SpeechEngineConfig(ws_url=ws_url)
         resource = client.speech_engine.create(
             name="Coway AI Customer Service & Sales POC",
             speech_engine=config,
+            overrides=SpeechEngineConversationInitiationClientDataConfig(first_message=True),
         )
         engine_id = (
             getattr(resource, "engine_id", None)
