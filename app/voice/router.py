@@ -6,6 +6,7 @@ Includes:
   for client credential generation, department selection, and session isolation.
 """
 
+import os
 import time
 import asyncio
 import logging
@@ -61,13 +62,25 @@ async def _initiate_voice_session(department: str) -> VoiceSessionResponse:
     """Shared helper to validate credentials and generate a signed URL for Speech Engine."""
     settings = get_settings()
 
-    if not settings.elevenlabs_api_key or settings.elevenlabs_api_key.strip() in ("", "your_elevenlabs_api_key_here"):
+    api_key = settings.elevenlabs_api_key or os.getenv("ELEVENLABS_API_KEY")
+    engine_id = settings.elevenlabs_speech_engine_id or os.getenv("ELEVENLABS_SPEECH_ENGINE_ID")
+
+    # If missing from cached settings, attempt live reload of .env
+    if not api_key or not engine_id:
+        from dotenv import load_dotenv, find_dotenv
+        load_dotenv(find_dotenv())
+        get_settings.cache_clear()
+        settings = get_settings()
+        api_key = settings.elevenlabs_api_key or os.getenv("ELEVENLABS_API_KEY")
+        engine_id = settings.elevenlabs_speech_engine_id or os.getenv("ELEVENLABS_SPEECH_ENGINE_ID")
+
+    if not api_key or api_key.strip() in ("", "your_elevenlabs_api_key_here"):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="ELEVENLABS_API_KEY is not configured in .env file.",
         )
 
-    if not settings.elevenlabs_speech_engine_id or settings.elevenlabs_speech_engine_id.strip() in ("", "your_speech_engine_id_here"):
+    if not engine_id or engine_id.strip() in ("", "your_speech_engine_id_here"):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=(
@@ -80,10 +93,10 @@ async def _initiate_voice_session(department: str) -> VoiceSessionResponse:
     session = session_mgr.create_pending_session(department)
 
     try:
-        client = ElevenLabs(api_key=settings.elevenlabs_api_key)
+        client = ElevenLabs(api_key=api_key)
         # Request short-lived signed URL for client to connect to Speech Engine
         signed_url_resp = client.conversational_ai.conversations.get_signed_url(
-            agent_id=settings.elevenlabs_speech_engine_id
+            agent_id=engine_id
         )
         signed_url = signed_url_resp.signed_url
     except Exception as e:
@@ -127,10 +140,11 @@ async def voice_websocket_endpoint(websocket: WebSocket):
     headers = dict(websocket.headers)
 
     # 1. Official ElevenLabs Speech Engine JWT Authorization Verification
+    api_key = settings.elevenlabs_api_key or os.getenv("ELEVENLABS_API_KEY")
     auth_header = headers.get("x-elevenlabs-speech-engine-authorization")
-    if settings.elevenlabs_api_key and auth_header:
+    if api_key and auth_header:
         try:
-            verify_speech_engine_jwt(auth_header, settings.elevenlabs_api_key)
+            verify_speech_engine_jwt(auth_header, api_key)
             logger.info("ElevenLabs Speech Engine JWT verified successfully.")
         except Exception as e:
             logger.warning(f"Speech Engine authorization failed: {e}")
@@ -141,7 +155,11 @@ async def voice_websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
 
     # 3. Create Speech Engine Resource and Session
-    engine_id = settings.elevenlabs_speech_engine_id or "seng_default"
+    engine_id = (
+        settings.elevenlabs_speech_engine_id
+        or os.getenv("ELEVENLABS_SPEECH_ENGINE_ID")
+        or "seng_default"
+    )
     engine = SpeechEngineResource(engine_id=engine_id)
     speech_session = engine.create_session(websocket, debug=settings.app_debug)
 
