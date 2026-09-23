@@ -33,6 +33,12 @@ class Settings(BaseSettings):
     elevenlabs_model_id: str = Field(
         default="eleven_turbo_v2_5", description="Default model ID for TTS synthesis"
     )
+    elevenlabs_speech_engine_id: Optional[str] = Field(
+        default=None, description="ElevenLabs Speech Engine ID"
+    )
+    elevenlabs_public_ws_url: Optional[str] = Field(
+        default=None, description="Public WSS URL pointing to our voice WebSocket"
+    )
 
     # NotebookLM MCP configuration
     notebooklm_mcp_command: str = Field(
@@ -47,6 +53,17 @@ class Settings(BaseSettings):
     )
     notebooklm_notebook_url: Optional[str] = Field(
         default=None, description="Active NotebookLM URL"
+    )
+
+    # Knowledge System & Background Sync
+    knowledge_provider: str = Field(
+        default="local", description="Knowledge provider: 'local', 'notebooklm', 'mock'"
+    )
+    knowledge_sync_interval_minutes: int = Field(
+        default=15, description="Interval in minutes for background knowledge sync check"
+    )
+    knowledge_snapshot_dir: str = Field(
+        default="data/knowledge_snapshots", description="Directory for versioned runtime KB snapshots"
     )
 
     # Database configuration

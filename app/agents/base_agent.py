@@ -126,6 +126,10 @@ class BaseAgent:
         provider_name = self.knowledge_provider.__class__.__name__ if self.knowledge_provider else "NONE"
         if "NotebookLM" in provider_name:
             provider_name = "NOTEBOOKLM"
+        elif "Local" in provider_name:
+            provider_name = "LOCAL"
+        elif "Mock" in provider_name:
+            provider_name = "MOCK"
 
         llm_provider = getattr(self.llm_client, "provider", "GROQ")
 

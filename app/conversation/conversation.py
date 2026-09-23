@@ -7,7 +7,7 @@ from app.agents.sales_agent import SalesAgent
 from app.agents.support_agent import CustomerSupportAgent
 from app.agents.manager import ManagerAgent, ManagerAction, ManagerDecision
 from app.knowledge.base import BaseKnowledgeProvider
-from app.knowledge.notebooklm import NotebookLMKnowledgeProvider
+from app.knowledge import get_knowledge_provider
 from app.llm.gemini import LLMCallResult
 
 
@@ -26,7 +26,7 @@ class Conversation:
         self.department = department.upper()
         self.history: List[Dict[str, str]] = []
         self.active: bool = True
-        self.knowledge_provider = knowledge_provider or NotebookLMKnowledgeProvider()
+        self.knowledge_provider = knowledge_provider or get_knowledge_provider()
 
         if active_agent is not None:
             self.active_agent = active_agent

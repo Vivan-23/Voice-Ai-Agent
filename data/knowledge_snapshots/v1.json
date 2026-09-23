@@ -1,0 +1,182 @@
+{
+  "version": 1,
+  "status": "READY",
+  "timestamp": "2026-09-22T13:54:18.808095+00:00",
+  "source_count": 4,
+  "sources": [
+    {
+      "id": "src_coway_catalog",
+      "name": "Coway Product Catalog 2026",
+      "source_type": "catalog",
+      "fingerprint": "fp_coway_catalog_2026",
+      "item_count": 3,
+      "synced_at": "2026-09-22T12:00:00Z"
+    },
+    {
+      "id": "src_coway_promotions",
+      "name": "Coway Sales & Promotional Policy",
+      "source_type": "document",
+      "fingerprint": "fp_coway_promo_2026",
+      "item_count": 1,
+      "synced_at": "2026-09-22T12:00:00Z"
+    },
+    {
+      "id": "src_coway_warranty",
+      "name": "Coway Customer Care & Warranty Guidelines",
+      "source_type": "document",
+      "fingerprint": "fp_coway_warranty_2026",
+      "item_count": 1,
+      "synced_at": "2026-09-22T12:00:00Z"
+    },
+    {
+      "id": "src_coway_manual",
+      "name": "Coway Technical Service Manual",
+      "source_type": "manual",
+      "fingerprint": "fp_coway_manual_2026",
+      "item_count": 2,
+      "synced_at": "2026-09-22T12:00:00Z"
+    }
+  ],
+  "documents": [
+    {
+      "id": "prod_airmega_150",
+      "title": "Coway Airmega 150 Specifications & Pricing",
+      "category": "products",
+      "source_name": "Coway Product Catalog 2026",
+      "keywords": [
+        "airmega 150",
+        "150",
+        "bedroom",
+        "coverage",
+        "price",
+        "mrp",
+        "cost",
+        "filter",
+        "hepa",
+        "dimensions",
+        "specs"
+      ],
+      "content": "Model: Coway Airmega 150 (AP-1019C).\nTarget Space: Compact bedrooms, study rooms, personal offices.\nRoom Coverage: Up to 355 sq. ft. (33 sq. meters) with 303 m3/hr CADR.\nPricing: MRP INR 16,999 (Standard Selling Price: INR 14,999).\nFiltration System: 3-Stage Filtration featuring Washable Pre-Filter (cartridge-type for easy removal and cleaning), Patented Urethane Carbon Deodorization Filter, and Anti-Virus Green True HEPA Filter trapping 99.97% of airborne allergens and PM0.1 particles.\nKey Features: Real-time AQI 4-color LED indicator ring (Blue: Good, Green: Normal, Yellow: Unhealthy, Red: Very Unhealthy), Filter replacement LED reminder, Ultra-quiet operation (22 dB in sleep mode), Power consumption 35 Watts.\nAvailable Colors: White, Moss Green, and Peony Pink."
+    },
+    {
+      "id": "prod_airmega_250",
+      "title": "Coway Airmega 250 Specifications & Pricing",
+      "category": "products",
+      "source_name": "Coway Product Catalog 2026",
+      "keywords": [
+        "airmega 250",
+        "250",
+        "living room",
+        "coverage",
+        "price",
+        "mrp",
+        "cost",
+        "filter",
+        "hepa",
+        "max2",
+        "eco mode",
+        "smart"
+      ],
+      "content": "Model: Coway Airmega 250 (AP-1720H).\nTarget Space: Medium to large living rooms, master bedrooms, office lounges.\nRoom Coverage: Up to 600 sq. ft. (55 sq. meters) with 460 m3/hr CADR.\nPricing: MRP INR 34,999 (Standard Selling Price: INR 29,999).\nFiltration System: Multi-directional 360-degree suction with Max2 all-in-one Filter combining Green True HEPA and Activated Carbon.\nKey Features: Smart ECO Mode (automatically stops fan when air remains clean for 10 minutes to save power, resumes when pollution detected), Rapid Mode for high-speed cleaning, Real-time PM2.5 numerical/color indicator, Sleep mode (22 dB), Child lock, Power consumption 45 Watts.\nDesign: Sleek matte finish with bottom pre-filter slide-out tray for convenient cleaning without opening the entire front chassis."
+    },
+    {
+      "id": "prod_airmega_300",
+      "title": "Coway Airmega 300 / 300S Specifications & Pricing",
+      "category": "products",
+      "source_name": "Coway Product Catalog 2026",
+      "keywords": [
+        "airmega 300",
+        "airmega 300s",
+        "300",
+        "large room",
+        "commercial",
+        "coverage",
+        "price",
+        "dual suction"
+      ],
+      "content": "Model: Coway Airmega 300 / 300S.\nTarget Space: Large open-plan apartments, villas, commercial offices.\nRoom Coverage: Up to 1,256 sq. ft. (117 sq. meters).\nPricing: MRP INR 44,999.\nFiltration System: Dual Suction Max2 Filters on both sides of unit for rapid air turnover.\nKey Features: Smart Wi-Fi connectivity (300S model) via Coway IoCare Mobile App, Alexa / Google Assistant voice control, Smart Auto mode."
+    },
+    {
+      "id": "offers_discounts_2026",
+      "title": "Coway Official Discounts & Promotional Offers",
+      "category": "discounts",
+      "source_name": "Coway Sales & Promotional Policy",
+      "keywords": [
+        "discount",
+        "discounts",
+        "offer",
+        "offers",
+        "promotion",
+        "coupon",
+        "deal",
+        "bank offer",
+        "credit card",
+        "hdfc",
+        "icici",
+        "sbi",
+        "exchange"
+      ],
+      "content": "Current Official Promotions & Discounts:\n1. Instant Bank Discount: Up to 10% instant discount (max INR 2,000) on HDFC, ICICI, and SBI Bank credit cards and EMI transactions.\n2. Seasonal Bundle Offer: 15% discount on purchasing an extra replacement Max2/Green HEPA filter set together with any Airmega purifier.\n3. Delivery & Setup: 100% Free Pan-India doorstep delivery with free video/onsite installation demonstration.\n4. No-Cost EMI: 3-month and 6-month no-cost EMI available across leading credit cards."
+    },
+    {
+      "id": "warranty_service_policy",
+      "title": "Coway Warranty, Filter Life & Customer Support Details",
+      "category": "warranty",
+      "source_name": "Coway Customer Care & Warranty Guidelines",
+      "keywords": [
+        "warranty",
+        "guarantee",
+        "motor",
+        "service",
+        "customer care",
+        "helpline",
+        "toll free",
+        "filter life",
+        "replacement",
+        "hours"
+      ],
+      "content": "Warranty & Service Coverage:\n1. Standard Warranty: 1-Year Comprehensive Warranty covering all electrical components and manufacturing defects.\n2. Motor Warranty: 5-Year Extended Warranty on the internal suction motor.\n3. Filter Lifespan: Green True HEPA and Max2 filters have an 8,500-hour (approx 1 year of daily use) lifespan. The washable pre-filter should be washed under running water every 2 to 4 weeks.\n4. Customer Care Contact: Toll-free Helpline: 1800-102-6960 (Monday to Saturday, 9:00 AM - 6:00 PM IST) or email info@cowayindia.in.\n5. Service Turnaround: Pan-India home technician visits within 24 to 48 hours in major metropolitan cities."
+    },
+    {
+      "id": "troubleshooting_power_fan",
+      "title": "Troubleshooting: Unit Won't Turn On or Silent Fan",
+      "category": "troubleshooting",
+      "source_name": "Coway Technical Service Manual",
+      "keywords": [
+        "power",
+        "not turning on",
+        "silent",
+        "fan not working",
+        "won't start",
+        "front cover",
+        "interlock",
+        "safety switch",
+        "troubleshoot"
+      ],
+      "content": "Troubleshooting Steps for Power / Fan Not Starting:\n1. Check Power Source: Ensure the power cord is securely plugged into a live 220-240V AC wall outlet and the power button is pressed.\n2. Inspect Front Cover Safety Interlock: All Coway Airmega models feature a physical safety interlock switch. If the front panel cover is not snapped tightly into place, the safety switch will disconnect power to the fan to prevent injury.\n3. Cover Reseat Procedure: Remove the front cover, verify the pre-filter is properly locked in its upper clips, and then align the bottom tabs of the front cover and push firmly on the top two corners until a solid 'click' sound is heard on both sides.\n4. If power indicator light is on but fan does not spin after securing cover, guide the customer to request a technician service visit via 1800-102-6960."
+    },
+    {
+      "id": "troubleshooting_aqi_sensor_odor",
+      "title": "Troubleshooting: AQI Light Red / Odor / Noise Issues",
+      "category": "troubleshooting",
+      "source_name": "Coway Technical Service Manual",
+      "keywords": [
+        "red light",
+        "aqi sensor",
+        "dust sensor",
+        "smell",
+        "odor",
+        "noise",
+        "plastic",
+        "troubleshoot"
+      ],
+      "content": "Troubleshooting Steps for AQI Sensor and Odor:\n1. Red AQI Light Staying On Constantly: The optical particle sensor on the side may have dust accumulation. Open the sensor cover on the right side of the unit and gently wipe the lens with a damp cotton swab, followed by a dry cotton swab. Adjust sensor sensitivity if necessary.\n2. Plastic / Unpleasant Smell from New Unit: Check if the plastic wrapping on the internal HEPA/Carbon filters was removed prior to first use. Always unwrap filter plastic before turning on.\n3. Sour or Musty Smell: Indicates pre-filter is dirty or carbon filter has reached saturation (> 1 year). Wash pre-filter and replace carbon filter cartridge."
+    }
+  ],
+  "metadata": {
+    "type": "seed_bootstrap",
+    "notebook_id": "coway-india-customer-support-k"
+  },
+  "last_sync_duration_seconds": 0.001,
+  "last_error": null
+}

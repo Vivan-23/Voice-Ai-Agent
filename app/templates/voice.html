@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coway AI — Voice Specialist POC</title>
+  <style>
+    :root {
+      --bg: #0c0f17;
+      --card-bg: #151a24;
+      --card-border: #232d3f;
+      --accent: #00d2ff;
+      --accent-glow: rgba(0, 210, 255, 0.35);
+      --text: #e2e8f0;
+      --text-muted: #8e9bb0;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --btn-hover: #1e2638;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-family);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 1.25rem;
+      padding: 2.25rem 2rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+      text-align: center;
+    }
+
+    .brand-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      margin-bottom: 0.25rem;
+      text-transform: uppercase;
+    }
+
+    .brand-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 1.75rem;
+    }
+
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+      text-align: left;
+    }
+
+    .dept-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .dept-btn {
+      background: #11151f;
+      border: 1.5px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 0.85rem 0.5rem;
+      border-radius: 0.75rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      align-items: center;
+    }
+
+    .dept-btn .sub {
+      font-size: 0.7rem;
+      opacity: 0.7;
+      font-weight: 400;
+    }
+
+    .dept-btn:hover:not(:disabled) {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    .dept-btn.active {
+      background: rgba(0, 210, 255, 0.1);
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .dept-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .call-card {
+      background: #0f131c;
+      border: 1px solid var(--card-border);
+      border-radius: 1rem;
+      padding: 1.5rem 1rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.35rem 0.85rem;
+      border-radius: 2rem;
+      background: rgba(255, 255, 255, 0.05);
+      margin-bottom: 1rem;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-muted);
+    }
+
+    .status-badge.connected .status-dot {
+      background: var(--success);
+      box-shadow: 0 0 10px var(--success);
+      animation: pulse 2s infinite;
+    }
+
+    .status-badge.connecting .status-dot {
+      background: var(--warning);
+      box-shadow: 0 0 10px var(--warning);
+      animation: pulse 1s infinite;
+    }
+
+    .status-badge.connected {
+      color: var(--success);
+    }
+    .status-badge.connecting {
+      color: var(--warning);
+    }
+    .status-badge.disconnected {
+      color: var(--text-muted);
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.2); }
+    }
+
+    .agent-display {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+    }
+
+    .agent-dept {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+    }
+
+    .mic-indicator {
+      font-size: 0.95rem;
+      font-weight: 500;
+      min-height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      color: var(--accent);
+    }
+
+    .mic-indicator.muted {
+      color: var(--text-muted);
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .btn {
+      padding: 0.9rem 1rem;
+      border-radius: 0.75rem;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .btn-start {
+      background: var(--accent);
+      color: #0c0f17;
+      box-shadow: 0 4px 14px var(--accent-glow);
+    }
+
+    .btn-start:hover:not(:disabled) {
+      filter: brightness(1.15);
+      transform: translateY(-1px);
+    }
+
+    .btn-end {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-end:hover:not(:disabled) {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .telemetry-toggle-row {
+      margin-top: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .telemetry-panel {
+      display: none;
+      margin-top: 1rem;
+      background: #090c12;
+      border: 1px solid var(--card-border);
+      border-radius: 0.5rem;
+      padding: 0.75rem;
+      text-align: left;
+      font-family: monospace;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      max-height: 140px;
+      overflow-y: auto;
+    }
+
+    .error-banner {
+      display: none;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid var(--danger);
+      color: #fca5a5;
+      font-size: 0.8rem;
+      padding: 0.65rem;
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="brand-title">COWAY AI</div>
+    <div class="brand-subtitle">Voice Customer Service & Sales Platform</div>
+
+    <div id="error-banner" class="error-banner"></div>
+
+    <div class="section-label">Choose Department</div>
+    <div class="dept-selector">
+      <button id="dept-sales" class="dept-btn active" onclick="selectDepartment('SALES')">
+        <span>SALES</span>
+        <span class="sub">Sarah (Inquiries & Offers)</span>
+      </button>
+      <button id="dept-support" class="dept-btn" onclick="selectDepartment('CUSTOMER_SUPPORT')">
+        <span>CUSTOMER SUPPORT</span>
+        <span class="sub">Alex (Service & Troubleshooting)</span>
+      </button>
+    </div>
+
+    <div class="call-card">
+      <div id="status-badge" class="status-badge disconnected">
+        <span class="status-dot"></span>
+        <span id="status-text">Disconnected</span>
+      </div>
+
+      <div id="agent-name" class="agent-display">Sarah</div>
+      <div id="agent-dept" class="agent-dept">Coway Sales Specialist</div>
+
+      <div id="mic-status" class="mic-indicator muted">
+        <span>Ready to start call</span>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="btn-start" class="btn btn-start" onclick="startCall()">Start Call</button>
+      <button id="btn-end" class="btn btn-end" onclick="endCall()" disabled>End Call</button>
+    </div>
+
+    <label class="telemetry-toggle-row">
+      <input type="checkbox" id="chk-telemetry" onchange="toggleTelemetry(this.checked)">
+      <span>Show Voice Telemetry / Debug Log</span>
+    </label>
+
+    <div id="telemetry-panel" class="telemetry-panel">
+      <div>[Telemetry idle — start a call to see live turn events]</div>
+    </div>
+  </div>
+
+  <script type="module">
+    // Dynamically load official ElevenLabs client SDK via CDN
+    import { Conversation } from 'https://cdn.jsdelivr.net/npm/@elevenlabs/client/+esm';
+
+    let activeDepartment = "SALES";
+    let activeConversation = null;
+    let isCalling = false;
+
+    window.selectDepartment = function(dept) {
+      if (isCalling) return;
+      activeDepartment = dept;
+      document.getElementById('dept-sales').classList.toggle('active', dept === 'SALES');
+      document.getElementById('dept-support').classList.toggle('active', dept === 'CUSTOMER_SUPPORT');
+      document.getElementById('agent-name').textContent = dept === 'SALES' ? 'Sarah' : 'Alex';
+      document.getElementById('agent-dept').textContent = dept === 'SALES' ? 'Coway Sales Specialist' : 'Coway Support Specialist';
+    };
+
+    window.toggleTelemetry = function(show) {
+      document.getElementById('telemetry-panel').style.display = show ? 'block' : 'none';
+    };
+
+    function logTelemetry(msg) {
+      const panel = document.getElementById('telemetry-panel');
+      const time = new Date().toLocaleTimeString();
+      panel.innerHTML += `<div>[${time}] ${msg}</div>`;
+      panel.scrollTop = panel.scrollHeight;
+    }
+
+    function setStatus(state, label) {
+      const badge = document.getElementById('status-badge');
+      const text = document.getElementById('status-text');
+      badge.className = `status-badge ${state}`;
+      text.textContent = label;
+    }
+
+    function setMicIndicator(text, isSpeaking = false) {
+      const mic = document.getElementById('mic-status');
+      mic.className = isSpeaking ? 'mic-indicator' : 'mic-indicator muted';
+      mic.textContent = text;
+    }
+
+    function showError(msg) {
+      const banner = document.getElementById('error-banner');
+      banner.textContent = msg;
+      banner.style.display = 'block';
+    }
+
+    function clearError() {
+      const banner = document.getElementById('error-banner');
+      banner.style.display = 'none';
+      banner.textContent = '';
+    }
+
+    window.startCall = async function() {
+      clearError();
+      const startBtn = document.getElementById('btn-start');
+      const endBtn = document.getElementById('btn-end');
+
+      startBtn.disabled = true;
+      setStatus('connecting', 'Connecting...');
+      setMicIndicator('Requesting microphone permission...');
+      logTelemetry(`Requesting voice session for department=${activeDepartment}...`);
+
+      try {
+        // Request microphone permission upfront
+        await navigator.mediaDevices.getUserMedia({ audio: true });
+
+        // 1. Fetch short-lived signed URL and session config from server
+        const resp = await fetch('/api/voice/session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ department: activeDepartment }),
+        });
+
+        if (!resp.ok) {
+          const errData = await resp.json().catch(() => ({}));
+          throw new Error(errData.detail || `Server returned ${resp.status}`);
+        }
+
+        const sessionData = await resp.json();
+        logTelemetry(`Session reserved: ${sessionData.session_id}, Specialist: ${sessionData.agent_name}`);
+
+        // 2. Start ElevenLabs Speech Engine session
+        activeConversation = await Conversation.startSession({
+          signedUrl: sessionData.signed_url,
+          overrides: {
+            agent: {
+              firstMessage: sessionData.first_message,
+            }
+          },
+          dynamicVariables: {
+            department: sessionData.department,
+            session_id: sessionData.session_id,
+          },
+          onConnect: async ({ conversationId }) => {
+            isCalling = true;
+            setStatus('connected', 'Connected');
+            setMicIndicator('🎙 Listening...');
+            endBtn.disabled = false;
+            logTelemetry(`Connected to ElevenLabs. Conversation ID: ${conversationId}`);
+
+            // Bind conversation ID to session on backend
+            try {
+              await fetch('/api/voice/session/bind', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  conversation_id: conversationId,
+                  session_id: sessionData.session_id,
+                  department: sessionData.department,
+                }),
+              });
+              logTelemetry(`Bound conversation ${conversationId} to specialist ${sessionData.agent_name}.`);
+            } catch (bindErr) {
+              console.warn('Binding error:', bindErr);
+            }
+          },
+          onDisconnect: () => {
+            handleDisconnected();
+          },
+          onModeChange: ({ mode }) => {
+            if (mode === 'speaking') {
+              setMicIndicator(`🔊 ${sessionData.agent_name} is speaking...`, true);
+              logTelemetry(`${sessionData.agent_name} speaking...`);
+            } else if (mode === 'listening') {
+              setMicIndicator('🎙 Listening...');
+              logTelemetry('Listening for customer...');
+            }
+          },
+          onError: (err) => {
+            console.error('ElevenLabs Voice Error:', err);
+            logTelemetry(`Error: ${err.message || err}`);
+            showError(`Voice Error: ${err.message || err}`);
+          }
+        });
+
+      } catch (err) {
+        console.error('Call initialization failed:', err);
+        showError(err.message || 'Failed to start call. Check microphone and configuration.');
+        handleDisconnected();
+      }
+    };
+
+    window.endCall = async function() {
+      if (activeConversation) {
+        logTelemetry('Ending voice session...');
+        try {
+          await activeConversation.endSession();
+        } catch (e) {
+          console.warn('Error during endSession:', e);
+        }
+      }
+      handleDisconnected();
+    };
+
+    function handleDisconnected() {
+      isCalling = false;
+      activeConversation = null;
+      document.getElementById('btn-start').disabled = false;
+      document.getElementById('btn-end').disabled = true;
+      setStatus('disconnected', 'Disconnected');
+      setMicIndicator('Ready to start call');
+      logTelemetry('Session disconnected.');
+    }
+  </script>
+</body>
+</html>
