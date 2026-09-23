@@ -168,7 +168,6 @@ async def voice_websocket_endpoint(websocket: WebSocket):
     current_conv_id: Optional[str] = None
 
     # 4. Wire Speech Engine lifecycle events
-    @speech_session.on("init")
     async def handle_init(conversation_id: str):
         nonlocal active_voice_session, current_conv_id
         current_conv_id = conversation_id
@@ -180,7 +179,6 @@ async def voice_websocket_endpoint(websocket: WebSocket):
             f"agent={active_voice_session.agent_name}, dept={active_voice_session.department}"
         )
 
-    @speech_session.on("user_transcript")
     async def handle_user_transcript(transcript: List[Any]):
         nonlocal active_voice_session, current_conv_id
         t_stt_received = time.perf_counter()
@@ -253,12 +251,16 @@ async def voice_websocket_endpoint(websocket: WebSocket):
             fallback_text = "I'm sorry, I encountered a brief glitch. Could you repeat that?"
             await speech_session.send_response(fallback_text)
 
-    @speech_session.on("close")
     async def handle_close():
         nonlocal current_conv_id
         if current_conv_id:
             session_mgr.remove_session(current_conv_id)
             logger.info(f"Voice Session closed: conv_id={current_conv_id}")
+
+    # Register event handlers
+    speech_session.on("init", handle_init)
+    speech_session.on("user_transcript", handle_user_transcript)
+    speech_session.on("close", handle_close)
 
     # 5. Run the Speech Engine session loop
     try:
