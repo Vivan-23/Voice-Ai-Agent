@@ -154,16 +154,43 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 ---
 
-## 5. Component Replacement Guide
+## 5. Voice Agent Integration (ElevenLabs Speech Engine)
+
+The platform includes real-time bidirectional conversational voice powered by **ElevenLabs Speech Engine** (acting strictly as the voice layer: STT, TTS, turn-taking, and barge-in / interruption handling) while retaining Python, Groq, and Local Knowledge as the conversational brain.
+
+### Development Startup Sequence:
+1. **Start ngrok tunnel**:
+   ```bash
+   ngrok http 8000
+   ```
+2. **Start FastAPI application**:
+   ```bash
+   python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+   ```
+3. **Configure Speech Engine**:
+   ```bash
+   python scripts/setup_elevenlabs.py
+   ```
+4. **Open Browser Voice UI**:
+   Navigate to `http://localhost:8000/voice`:
+   - Select department (**Sales** or **Customer Support**).
+   - Click **Start Call**.
+   - Speak naturally with Sarah or Alex, and interrupt mid-response.
+
+### Running Voice Tests:
+```bash
+pytest tests/unit/test_voice_service.py -v
+```
+
+---
+
+## 6. Component Replacement Guide
 
 | Component | Current Implementation | Interface | Alternative Replacements |
 | :--- | :--- | :--- | :--- |
-| **Speech-to-Text** | `ElevenLabsSTTService` | `BaseSTTService` | Deepgram Nova-2, Whisper API, Azure Speech |
-| **Text-to-Speech** | `ElevenLabsTTSService` | `BaseTTSService` | Cartesia Sonic, Play.ht, Azure Neural TTS |
-| **Knowledge Base** | `NotebookLMMCPKnowledgeService` | `BaseKnowledgeService` | pgvector Hybrid Search, Pinecone, Qdrant |
-| **CRM Sync** | `LocalCRMService` | `BaseCRMService` | HubSpot, Salesforce, Zoho CRM, Freshdesk |
+| **Voice Layer** | `ElevenLabs Speech Engine` | `SpeechEngineResource` | Deepgram + Cartesia, LiveKit |
+| **Conversational LLM** | `Groq (openai/gpt-oss-20b)` | `GeminiClient` | Google Gemini, OpenAI GPT-4o |
+| **Runtime Knowledge** | `LocalKnowledgeProvider` | `BaseKnowledgeProvider` | pgvector Hybrid Search, Pinecone, Qdrant |
+| **Upstream Knowledge** | `NotebookLM MCP` | `BaseKnowledgeProvider` | Document Ingestion Pipeline |
+| **CRM Sync** | `LocalCRMService` | `BaseCRMService` | HubSpot, Salesforce, Zoho CRM |
 
-To swap any component:
-1. Implement the corresponding interface in `app/interfaces/`.
-2. Update the factory function in `app/api/dependencies.py`.
-3. No agent, telephony, or business logic code needs to be altered.
