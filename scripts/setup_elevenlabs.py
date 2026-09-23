@@ -133,7 +133,14 @@ def main():
             name="Coway AI Customer Service & Sales POC",
             speech_engine=config,
         )
-        engine_id = getattr(resource, "id", None) or getattr(resource, "speech_engine_id", str(resource))
+        engine_id = (
+            getattr(resource, "engine_id", None)
+            or getattr(resource, "speech_engine_id", None)
+            or getattr(resource, "id", None)
+        )
+        if not engine_id and hasattr(resource, "config") and resource.config:
+            engine_id = getattr(resource.config, "speech_engine_id", None) or getattr(resource.config, "id", None)
+
         print(f"\n[SUCCESS] Speech Engine created successfully!")
         print(f"  Speech Engine ID: {engine_id}")
         print("\nPlease add the following lines to your .env file:")
