@@ -63,7 +63,12 @@ def main():
     parser.add_argument(
         "--ws-url",
         dest="ws_url",
-        help="Public WebSocket URL pointing to /ws/voice (e.g. wss://xyz.ngrok-free.app/ws/voice)",
+        help="Public WebSocket URL pointing to /ws/voice (e.g. wss://coway-backend.onrender.com/ws/voice)",
+    )
+    parser.add_argument(
+        "--engine-id",
+        dest="engine_id",
+        help="Existing Speech Engine ID to verify or update (e.g. seng_...)",
     )
     args = parser.parse_args()
 
@@ -90,9 +95,9 @@ def main():
         else:
             print("\n[ERROR] Public WebSocket URL is required so ElevenLabs can connect to /ws/voice.")
             print("Please provide it via:")
-            print("  python scripts/setup_elevenlabs.py --ws-url wss://YOUR_DOMAIN.ngrok-free.app/ws/voice")
+            print("  python scripts/setup_elevenlabs.py --ws-url wss://YOUR_DOMAIN.onrender.com/ws/voice")
             print("or set ELEVENLABS_PUBLIC_WS_URL in your .env file.\n")
-            print("To start ngrok locally, run:")
+            print("For local development with ngrok, run:")
             print("  ngrok http 8000\n")
             sys.exit(1)
     else:
@@ -101,29 +106,43 @@ def main():
     print(f"\nTarget WebSocket URL: {ws_url}")
 
     # 2. Check if Speech Engine already exists
-    existing_id = settings.elevenlabs_speech_engine_id or os.getenv("ELEVENLABS_SPEECH_ENGINE_ID")
+    existing_id = args.engine_id or settings.elevenlabs_speech_engine_id or os.getenv("ELEVENLABS_SPEECH_ENGINE_ID")
     client = ElevenLabs(api_key=api_key)
 
     if existing_id and existing_id.strip() not in ("", "your_speech_engine_id_here"):
         print(f"\n[CONFIGURED] Existing Speech Engine ID found: {existing_id}")
         try:
-            print("Verifying Speech Engine with ElevenLabs...")
-            engine_resource = client.speech_engine.get(existing_id)
-            print(f"[SUCCESS] Speech Engine {existing_id} is valid and verified.")
-            print(f"\nTo use this engine, ensure .env contains:")
+            print(f"Updating Speech Engine {existing_id} with WebSocket URL: {ws_url}...")
+            client.speech_engine.update(
+                existing_id,
+                speech_engine=SpeechEngineConfig(ws_url=ws_url),
+            )
+            print(f"[SUCCESS] Speech Engine {existing_id} updated with target URL: {ws_url}")
+            print(f"\nProduction configuration active:")
             print(f"  ELEVENLABS_SPEECH_ENGINE_ID={existing_id}")
             print(f"  ELEVENLABS_PUBLIC_WS_URL={ws_url}")
             print("=" * 65 + "\n")
             return
-        except Exception as e:
-            err_str = str(e)
-            if "convai_read" in err_str or "missing_permissions" in err_str:
-                print(f"\n[NOTICE] Your API key is valid but lacks 'convai_read' permission to query engine status.")
-                print(f"[NOTICE] Using configured ELEVENLABS_SPEECH_ENGINE_ID={existing_id} as specified.")
+        except Exception as update_err:
+            err_str = str(update_err)
+            if "convai_read" in err_str or "convai_write" in err_str or "missing_permissions" in err_str:
+                print(f"[NOTICE] Key lacks conversational AI update permissions ({err_str}).")
+                print(f"[NOTICE] Retaining configured ELEVENLABS_SPEECH_ENGINE_ID={existing_id}.")
+                print(f"[NOTICE] Please ensure Speech Engine in ElevenLabs Dashboard points to: {ws_url}")
                 print("=" * 65 + "\n")
                 return
             else:
-                print(f"[WARNING] Could not retrieve existing engine ({e}). Attempting to create new engine...")
+                print(f"[NOTICE] Update attempted ({update_err}). Checking if engine exists...")
+                try:
+                    engine_resource = client.speech_engine.get(existing_id)
+                    print(f"[SUCCESS] Speech Engine {existing_id} is valid and verified.")
+                    print(f"\nTo use this engine, ensure .env contains:")
+                    print(f"  ELEVENLABS_SPEECH_ENGINE_ID={existing_id}")
+                    print(f"  ELEVENLABS_PUBLIC_WS_URL={ws_url}")
+                    print("=" * 65 + "\n")
+                    return
+                except Exception as e:
+                    print(f"[WARNING] Could not retrieve existing engine ({e}). Attempting to create new engine...")
 
     # 3. Create Speech Engine Resource
     print("\nCreating ElevenLabs Speech Engine resource...")

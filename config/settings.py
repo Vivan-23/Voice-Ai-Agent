@@ -73,12 +73,15 @@ class Settings(BaseSettings):
     )
     db_echo: bool = Field(default=False, description="Log raw SQL statements")
 
-    # LLM Settings (for LangGraph orchestration)
+    # LLM Settings (Groq primary)
     llm_provider: str = Field(
-        default="gemini", description="LLM provider: gemini, openai, local"
+        default="groq", description="LLM provider: groq, gemini, openai"
     )
     llm_model: str = Field(
-        default="gemini-2.5-flash", description="Model name for reasoning & agent dialogue"
+        default="openai/gpt-oss-20b", description="Model name for reasoning & agent dialogue"
+    )
+    groq_api_key: Optional[str] = Field(
+        default=None, description="Groq API key"
     )
     llm_api_key: Optional[str] = Field(
         default=None, description="Generic LLM API key"
@@ -96,6 +99,18 @@ class Settings(BaseSettings):
         default=0.2, description="Sampling temperature for grounded conversation"
     )
 
+    # CORS & Deployment
+    cors_allowed_origins: str = Field(
+        default="http://localhost:8000,http://localhost:3000,http://localhost:5173,http://127.0.0.1:8000,http://127.0.0.1:3000,http://127.0.0.1:5173",
+        description="Comma-separated allowed CORS origins",
+    )
+    frontend_origin: Optional[str] = Field(
+        default=None, description="Production Frontend Origin (e.g. Netlify URL)"
+    )
+    port: Optional[int] = Field(
+        default=None, description="Render assigned PORT environment variable"
+    )
+
     # Decision Engine (System One structured decision-making)
     decision_engine: str = Field(
         default="jev", description="Decision engine: 'jev' or 'fallback'"
@@ -109,6 +124,42 @@ class Settings(BaseSettings):
     jev_timeout_seconds: float = Field(
         default=1.8, description="Max timeout in seconds for JEV decision API before fallback"
     )
+
+    @property
+    def effective_port(self) -> int:
+        """Derive port from PORT environment variable (Render) or app_port."""
+        import os
+        if self.port:
+            return self.port
+        if "PORT" in os.environ:
+            try:
+                return int(os.environ["PORT"])
+            except ValueError:
+                pass
+        return self.app_port
+
+    def get_cors_origins(self) -> List[str]:
+        """Compute list of unique allowed CORS origins."""
+        origins = set()
+        if self.cors_allowed_origins:
+            for o in self.cors_allowed_origins.split(","):
+                o = o.strip()
+                if o:
+                    origins.add(o)
+        if self.frontend_origin:
+            for o in self.frontend_origin.split(","):
+                o = o.strip()
+                if o:
+                    origins.add(o)
+        origins.update([
+            "http://localhost:8000",
+            "http://localhost:3000",
+            "http://localhost:5173",
+            "http://127.0.0.1:8000",
+            "http://127.0.0.1:3000",
+            "http://127.0.0.1:5173",
+        ])
+        return sorted(list(origins))
 
 
 @lru_cache()
